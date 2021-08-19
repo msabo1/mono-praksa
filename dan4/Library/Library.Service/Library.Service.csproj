@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Library.Repository.Common\Library.Repository.Common.csproj" />
+    <ProjectReference Include="..\Library.Repository\Library.Repository.csproj" />
+    <ProjectReference Include="..\Library.Service.Common\Library.Service.Common.csproj" />
+  </ItemGroup>
+
+</Project>
