@@ -12,9 +12,9 @@ namespace Library.Service
     public class BooksService : IBooksService
     {
         private IBooksRepository _repository = new BooksRepository();
-        public async Task<IBook> CreateAsync(ICreateBookDto createDto)
+        public async Task<IBook> CreateAsync(IBook book)
         {
-            return await _repository.CreateAsync(createDto);
+            return await _repository.CreateAsync(book);
         }
 
 
@@ -28,9 +28,9 @@ namespace Library.Service
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<IBook> UpdateAsync(Guid id, IUpdateBookDto updateBookDto)
+        public async Task<IBook> UpdateAsync(IBook book)
         {
-            return await _repository.UpdateAsync(id, updateBookDto);
+            return await _repository.UpdateAsync(book);
         }
 
         public async Task<bool> DeleteAsync(Guid id)

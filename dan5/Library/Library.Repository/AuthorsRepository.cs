@@ -13,13 +13,9 @@ namespace Library.Repository
     public class AuthorsRepository : IAuthorsRepository
     {
         private SqlConnection _connection = new SqlConnection(ConfigurationManager.ConnectionStrings["Library"].ConnectionString);
-        public async Task<IAuthor> Create(ICreateAuthorDto createAuthorDto)
+        public async Task<IAuthor> CreateAsync(IAuthor author)
         {
-            Guid id = Guid.NewGuid();
-            IAuthor author = new Author();
-            author.Id = id;
-            author.Name = createAuthorDto.Name;
-            author.Gender = createAuthorDto.Gender;
+            author.Id = Guid.NewGuid();
             IQueryBuilder<IAuthor> queryBuilder = CreateQueryBuilder();
             queryBuilder.AddStatement(
                 "INSERT INTO Author VALUES(@Id, @Name, @Gender)",
@@ -62,29 +58,15 @@ namespace Library.Repository
             return await querBuilder.GetOneAsync();
         }
 
-        public async Task<IAuthor> UpdateAsync(Guid id, IUpdateAuthorDto updateAuthorDto)
+        public async Task<IAuthor> UpdateAsync(IAuthor author)
         {
-            IAuthor author = await GetByIdAsync(id);
-            if (author == null)
-            {
-                return null;
-            }
-
-            if (updateAuthorDto.Name != null)
-            {
-                author.Name = updateAuthorDto.Name;
-            }
-            if (updateAuthorDto.Gender != null)
-            {
-                author.Gender = updateAuthorDto.Gender;
-            }
             IQueryBuilder<IAuthor> queryBuilder = CreateQueryBuilder();
             queryBuilder.AddStatement(
-            "UPDATE Author SET Name = @Name, Gender = @Gender WHERE Id = @Id",
-            ("@Id", id),
-            ("@Name", author.Name),
-            ("@Gender", author.Gender)
-        );
+                "UPDATE Author SET Name = @Name, Gender = @Gender WHERE Id = @Id",
+                ("@Id", author.Id),
+                ("@Name", author.Name),
+                ("@Gender", author.Gender)
+            );
             await queryBuilder.ExecuteNonQueryAsync();
             return author;
         }

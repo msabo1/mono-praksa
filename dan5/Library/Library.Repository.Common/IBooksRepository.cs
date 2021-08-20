@@ -3,7 +3,7 @@ using Library.Model.Common.Book;
 
 namespace Library.Repository.Common
 {
-    public interface IBooksRepository : IBaseRepository<IBook, ICreateBookDto, IUpdateBookDto, IQueryBooksDto>
+    public interface IBooksRepository : IBaseRepository<IBook, IQueryBooksDto>
     {
     }
 }

@@ -1,5 +1,5 @@
-﻿using Library.Model.Common;
-using Library.Model.Common.Book;
+﻿using Library.Model.Book;
+using Library.Model.Common;
 using Library.Service;
 using Library.Service.Common;
 using System;
@@ -13,22 +13,26 @@ namespace Library.Controllers
     public class BooksController : ApiController
     {
         private IBooksService _service = new BooksService();
+        private Mapper _mapper = new Mapper();
         [HttpPost]
-        public async Task<IHttpActionResult> CreateAsync([FromBody()] ICreateBookDto createBookDto)
+        public async Task<IHttpActionResult> CreateAsync([FromBody()] CreateBookRest createBookRest)
         {
-            if (createBookDto == null)
+            if (createBookRest == null)
             {
                 return BadRequest("Body cannot be empty!");
             }
-            IBook book = await _service.CreateAsync(createBookDto);
-            return Content(System.Net.HttpStatusCode.Created, book);
+            IBook book = new Book();
+            book.Name = createBookRest.Name;
+            book.AuthorId = createBookRest.AuthorId;
+            book = await _service.CreateAsync(book);
+            return Content(System.Net.HttpStatusCode.Created, _mapper.MapBookDomainToRest(book));
         }
 
         [HttpGet]
-        public async Task<IHttpActionResult> GetAsync([FromUri] IQueryBooksDto queryBooksDto)
+        public async Task<IHttpActionResult> GetAsync([FromUri] QueryBooksDto queryBooksDto)
         {
             ICollection<IBook> books = await _service.GetAsync(queryBooksDto);
-            return Ok(books);
+            return Ok(_mapper.CollectionMapBookDomainToRest(books));
         }
 
         [HttpGet]
@@ -39,23 +43,31 @@ namespace Library.Controllers
             {
                 return NotFoundResponse();
             }
-            return Ok(book);
+            return Ok(_mapper.MapBookDomainToRest(book));
         }
 
         [HttpPut]
-        public async Task<IHttpActionResult> UpdateAsync(Guid id, [FromBody] IUpdateBookDto updateBookDto)
+        public async Task<IHttpActionResult> UpdateAsync(Guid id, [FromBody] UpdateBookRest updateBookRest)
         {
-            if (updateBookDto == null)
+            if (updateBookRest == null)
             {
                 return BadRequest("Body cannot be empty!");
             }
-            IBook book = await _service.UpdateAsync(id, updateBookDto);
+            IBook book = await _service.GetByIdAsync(id);
             if (book == null)
             {
                 return NotFoundResponse();
             }
-            return Ok(book);
-
+            if (updateBookRest.Name != null)
+            {
+                book.Name = updateBookRest.Name;
+            }
+            if (updateBookRest.AuthorId != null)
+            {
+                book.AuthorId = (Guid)updateBookRest.AuthorId;
+            }
+            await _service.UpdateAsync(book);
+            return Ok(_mapper.MapBookDomainToRest(book));
         }
 
         [HttpDelete]
@@ -75,4 +87,26 @@ namespace Library.Controllers
             return Content(System.Net.HttpStatusCode.NotFound, responseObj);
         }
     }
+
+    public class BookRest
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public AuthorRest Author { get; set; }
+    }
+
+    public class CreateBookRest
+    {
+        public string Name { get; set; }
+        public Guid AuthorId { get; set; }
+    }
+
+    public class UpdateBookRest
+    {
+#nullable enable
+        public string? Name { get; set; }
+        public Guid? AuthorId { get; set; }
+#nullable disable
+    }
+
 }

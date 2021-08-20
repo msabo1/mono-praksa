@@ -12,9 +12,9 @@ namespace Library.Service
     public class AuthorsService : IAuthorsService
     {
         private IAuthorsRepository _repository = new AuthorsRepository();
-        public async Task<IAuthor> CreateAsync(ICreateAuthorDto createDto)
+        public async Task<IAuthor> CreateAsync(IAuthor author)
         {
-            return await _repository.CreateAsync(createDto);
+            return await _repository.CreateAsync(author);
         }
 
 
@@ -28,9 +28,9 @@ namespace Library.Service
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<IAuthor> UpdateAsync(Guid id, IUpdateAuthorDto updateAuthorDto)
+        public async Task<IAuthor> UpdateAsync(IAuthor author)
         {
-            return await _repository.UpdateAsync(id, updateAuthorDto);
+            return await _repository.UpdateAsync(author);
         }
 
         public async Task<bool> DeleteAsync(Guid id)

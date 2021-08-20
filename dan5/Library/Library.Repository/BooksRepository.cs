@@ -14,13 +14,9 @@ namespace Library.Repository
     public class BooksRepository : IBooksRepository
     {
         private SqlConnection _connection = new SqlConnection(ConfigurationManager.ConnectionStrings["Library"].ConnectionString);
-        public async Task<IBook> CreateAsync(ICreateBookDto createBookDto)
+        public async Task<IBook> CreateAsync(IBook book)
         {
-            Guid id = Guid.NewGuid();
-            IBook book = new Book();
-            book.Id = id;
-            book.Name = createBookDto.Name;
-            book.AuthorId = createBookDto.AuthorId;
+            book.Id = Guid.NewGuid(); ;
             IQueryBuilder<IBook> queryBuilder = CreateQueryBuilder();
             queryBuilder.AddStatement(
                 "INSERT INTO Book VALUES(@Id, @Name, @AuthorId)",
@@ -55,29 +51,16 @@ namespace Library.Repository
         public async Task<IBook> GetByIdAsync(Guid id)
         {
             IQueryBuilder<IBook> querBuilder = CreateQueryBuilder();
-            querBuilder.Select("Book").Where("Id = @Id", ("@Id", id));
+            querBuilder.Select("Book").LeftJoin("Author", "AuthorId", "Id").Where("Book.Id = @Id", ("@Id", id));
             return await querBuilder.GetOneAsync();
         }
 
-        public async Task<IBook> UpdateAsync(Guid id, IUpdateBookDto updateBookDto)
+        public async Task<IBook> UpdateAsync(IBook book)
         {
-            IBook book = await GetByIdAsync(id);
-            if (book == null)
-            {
-                return null;
-            }
-            if (updateBookDto.Name != null)
-            {
-                book.Name = updateBookDto.Name;
-            }
-            if (updateBookDto.AuthorId != null)
-            {
-                book.AuthorId = (Guid)updateBookDto.AuthorId;
-            }
             IQueryBuilder<IBook> queryBuilder = CreateQueryBuilder();
             queryBuilder.AddStatement(
                 "UPDATE Book SET Name = @Name, AuthorId = @AuthorId WHERE Id = @Id",
-                ("@Id", id),
+                ("@Id", book.Id),
                 ("@Name", book.Name),
                 ("@AuthorId", book.AuthorId)
             );

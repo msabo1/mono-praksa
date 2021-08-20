@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Library.Repository.Common
 {
-    public interface IBaseRepository<ModelT, CreateDtoT, UpdateDtoT, QueryDtoT> where QueryDtoT : IBaseQuery
+    public interface IBaseRepository<ModelT, QueryDtoT> where QueryDtoT : IBaseQuery
     {
-        Task<ModelT> CreateAsync(CreateDtoT createDto);
+        Task<ModelT> CreateAsync(ModelT model);
         Task<ICollection<ModelT>> GetAsync(QueryDtoT queryDto);
         Task<ModelT> GetByIdAsync(Guid id);
-        Task<ModelT> UpdateAsync(Guid id, UpdateDtoT updateAuthorDto);
+        Task<ModelT> UpdateAsync(ModelT model);
         Task DeleteAsync(Guid id);
     }
 }

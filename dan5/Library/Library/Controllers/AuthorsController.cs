@@ -13,22 +13,26 @@ namespace Library.Controllers
     public class AuthorsController : ApiController
     {
         private IAuthorsService _service = new AuthorsService();
+        private Mapper _mapper = new Mapper();
         [HttpPost]
-        public async Task<IHttpActionResult> CreateAsync([FromBody()] CreateAuthorDto createAuthorDto)
+        public async Task<IHttpActionResult> CreateAsync([FromBody()] CreateAuthorRest createAuthorRest)
         {
-            if (createAuthorDto == null)
+            if (createAuthorRest == null)
             {
                 return BadRequest("Body cannot be empty!");
             }
-            IAuthor author = await _service.CreateAsync(createAuthorDto);
-            return Content(System.Net.HttpStatusCode.Created, author);
+            IAuthor author = new Author();
+            author.Name = createAuthorRest.Name;
+            author.Gender = createAuthorRest.Name;
+            author = await _service.CreateAsync(author);
+            return Content(System.Net.HttpStatusCode.Created, _mapper.MapAuthorDomainToRest(author));
         }
 
         [HttpGet]
         public async Task<IHttpActionResult> GetAsync([FromUri] QueryAuthorsDto queryAuthorsDto)
         {
             ICollection<IAuthor> authors = await _service.GetAsync(queryAuthorsDto);
-            return Ok(authors);
+            return Ok(_mapper.CollectionMapAuthorDomainToRest(authors));
         }
 
         [HttpGet]
@@ -39,22 +43,31 @@ namespace Library.Controllers
             {
                 return NotFoundResponse();
             }
-            return Ok(author);
+            return Ok(_mapper.MapAuthorDomainToRest(author));
         }
 
         [HttpPut]
-        public async Task<IHttpActionResult> UpdateAsync(Guid id, [FromBody] UpdateAuthorDto updateAuthorDto)
+        public async Task<IHttpActionResult> UpdateAsync(Guid id, [FromBody] UpdateAuthorRest updateAuthorRest)
         {
-            if (updateAuthorDto == null)
+            if (updateAuthorRest == null)
             {
                 return BadRequest("Body cannot be empty!");
             }
-            IAuthor author = await _service.UpdateAsync(id, updateAuthorDto);
+            IAuthor author = await _service.GetByIdAsync(id);
             if (author == null)
             {
                 return NotFoundResponse();
             }
-            return Ok(author);
+            if (updateAuthorRest.Name != null)
+            {
+                author.Name = updateAuthorRest.Name;
+            }
+            if (updateAuthorRest.Gender != null)
+            {
+                author.Gender = updateAuthorRest.Gender;
+            }
+            author = await _service.UpdateAsync(author);
+            return Ok(_mapper.MapAuthorDomainToRest(author));
 
         }
 
@@ -74,5 +87,25 @@ namespace Library.Controllers
             responseObj.Add("Message", "Author with provided id is not found!");
             return Content(System.Net.HttpStatusCode.NotFound, responseObj);
         }
+    }
+
+    public class AuthorRest
+    {
+        public Guid Id;
+        public string Name { get; set; }
+        public string Gender { get; set; }
+    }
+    public class CreateAuthorRest
+    {
+        public string Name { get; set; }
+        public string Gender { get; set; }
+    }
+
+    public class UpdateAuthorRest
+    {
+#nullable enable
+        public string? Name { get; set; }
+        public string? Gender { get; set; }
+#nullable disable
     }
 }

@@ -101,7 +101,7 @@ namespace Library.Repository
         {
             ICollection<ModelT> results = new List<ModelT>();
             SqlCommand cmd = GetSqlCommand();
-            _connection.Open();
+            await _connection.OpenAsync();
             SqlDataReader sqlReader = await cmd.ExecuteReaderAsync();
             if (sqlReader.HasRows)
             {
@@ -120,7 +120,7 @@ namespace Library.Repository
         {
             ModelT result = default;
             SqlCommand cmd = GetSqlCommand();
-            _connection.Open();
+            await _connection.OpenAsync();
             SqlDataReader sqlReader = await cmd.ExecuteReaderAsync();
             if (sqlReader.HasRows)
             {
@@ -135,7 +135,7 @@ namespace Library.Repository
         public async Task<int> ExecuteNonQueryAsync()
         {
             SqlCommand cmd = GetSqlCommand();
-            _connection.Open();
+            await _connection.OpenAsync();
             int result = await cmd.ExecuteNonQueryAsync();
             _connection.Close();
             return result;
