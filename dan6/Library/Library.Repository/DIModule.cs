@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 
 namespace Library.Repository
 {
-    public class RepositoryDIModule : Module
+    public class DIModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {

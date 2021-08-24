@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Autofac.Integration.WebApi;
-using Library.Service;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using System.Web.Http;
@@ -20,7 +19,9 @@ namespace Library
             var builder = new ContainerBuilder();
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
             builder.RegisterType<Mapper>().As<IMapper>();
-            builder.RegisterModule<ServiceDIModule>();
+            builder.RegisterModule<Service.DIModule>();
+            builder.RegisterModule<Repository.DIModule>();
+
             var container = builder.Build();
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
 
