@@ -1,4 +1,5 @@
-﻿using Library.Model.Author;
+﻿using AutoMapper;
+using Library.Model.Author;
 using Library.Model.Common;
 using Library.Service.Common;
 using System;
@@ -27,18 +28,16 @@ namespace Library.Controllers
             {
                 return BadRequest("Body cannot be empty!");
             }
-            IAuthor author = new Author();
-            author.Name = createAuthorRest.Name;
-            author.Gender = createAuthorRest.Name;
+            IAuthor author = _mapper.Map<Author>(createAuthorRest);
             author = await _service.CreateAsync(author);
-            return Content(System.Net.HttpStatusCode.Created, _mapper.MapAuthorDomainToRest(author));
+            return Content(System.Net.HttpStatusCode.Created, _mapper.Map<IAuthor, AuthorRest>(author));
         }
 
         [HttpGet]
         public async Task<IHttpActionResult> GetAsync([FromUri] QueryAuthorsDto queryAuthorsDto)
         {
             ICollection<IAuthor> authors = await _service.GetAsync(queryAuthorsDto);
-            return Ok(_mapper.CollectionMapAuthorDomainToRest(authors));
+            return Ok(_mapper.Map<List<AuthorRest>>(authors));
         }
 
         [HttpGet]
@@ -49,7 +48,7 @@ namespace Library.Controllers
             {
                 return NotFoundResponse();
             }
-            return Ok(_mapper.MapAuthorDomainToRest(author));
+            return Ok(_mapper.Map<AuthorRest>(author));
         }
 
         [HttpPut]
@@ -64,16 +63,9 @@ namespace Library.Controllers
             {
                 return NotFoundResponse();
             }
-            if (updateAuthorRest.Name != null)
-            {
-                author.Name = updateAuthorRest.Name;
-            }
-            if (updateAuthorRest.Gender != null)
-            {
-                author.Gender = updateAuthorRest.Gender;
-            }
+            author = _mapper.Map(updateAuthorRest, author);
             author = await _service.UpdateAsync(author);
-            return Ok(_mapper.MapAuthorDomainToRest(author));
+            return Ok(_mapper.Map<AuthorRest>(author));
 
         }
 

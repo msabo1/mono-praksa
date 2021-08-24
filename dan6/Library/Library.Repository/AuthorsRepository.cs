@@ -1,9 +1,11 @@
-﻿using Library.Model.Author;
+﻿using AutoMapper;
+using Library.Model.Author;
 using Library.Model.Common;
 using Library.Model.Common.Author;
 using Library.Repository.Common;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 
@@ -12,10 +14,12 @@ namespace Library.Repository
     public class AuthorsRepository : IAuthorsRepository
     {
         private SqlConnection _connection;
+        private IMapper _mapper;
 
-        public AuthorsRepository(SqlConnection connection)
+        public AuthorsRepository(SqlConnection connection, IMapper mapper)
         {
             _connection = connection;
+            _mapper = mapper;
         }
 
         public async Task<IAuthor> CreateAsync(IAuthor author)
@@ -87,18 +91,9 @@ namespace Library.Repository
             }
         }
 
-        private IAuthor MapDataReaderRowToAuthor(SqlDataReader reader)
-        {
-            IAuthor author = new Author();
-            author.Id = reader.GetGuid(0);
-            author.Name = reader.GetString(1);
-            author.Gender = reader.GetString(2);
-            return author;
-        }
-
         private IQueryBuilder<IAuthor> CreateQueryBuilder()
         {
-            return new QueryBuilder<IAuthor>(_connection, MapDataReaderRowToAuthor);
+            return new QueryBuilder<IAuthor>(_connection, _mapper.Map<IDataRecord, Author>);
         }
     }
 }

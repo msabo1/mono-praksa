@@ -1,4 +1,5 @@
-﻿using Library.Model.Book;
+﻿using AutoMapper;
+using Library.Model.Book;
 using Library.Model.Common;
 using Library.Service.Common;
 using System;
@@ -27,18 +28,16 @@ namespace Library.Controllers
             {
                 return BadRequest("Body cannot be empty!");
             }
-            IBook book = new Book();
-            book.Name = createBookRest.Name;
-            book.AuthorId = createBookRest.AuthorId;
+            IBook book = _mapper.Map<Book>(createBookRest);
             book = await _service.CreateAsync(book);
-            return Content(System.Net.HttpStatusCode.Created, _mapper.MapBookDomainToRest(book));
+            return Content(System.Net.HttpStatusCode.Created, _mapper.Map<BookRest>(book));
         }
 
         [HttpGet]
         public async Task<IHttpActionResult> GetAsync([FromUri] QueryBooksDto queryBooksDto)
         {
             ICollection<IBook> books = await _service.GetAsync(queryBooksDto);
-            return Ok(_mapper.CollectionMapBookDomainToRest(books));
+            return Ok(_mapper.Map<List<BookRest>>(books));
         }
 
         [HttpGet]
@@ -49,7 +48,7 @@ namespace Library.Controllers
             {
                 return NotFoundResponse();
             }
-            return Ok(_mapper.MapBookDomainToRest(book));
+            return Ok(_mapper.Map<BookRest>(book));
         }
 
         [HttpPut]
@@ -64,16 +63,9 @@ namespace Library.Controllers
             {
                 return NotFoundResponse();
             }
-            if (updateBookRest.Name != null)
-            {
-                book.Name = updateBookRest.Name;
-            }
-            if (updateBookRest.AuthorId != null)
-            {
-                book.AuthorId = (Guid)updateBookRest.AuthorId;
-            }
+            book = _mapper.Map(updateBookRest, book);
             await _service.UpdateAsync(book);
-            return Ok(_mapper.MapBookDomainToRest(book));
+            return Ok(_mapper.Map<BookRest>(book));
         }
 
         [HttpDelete]
@@ -97,20 +89,20 @@ namespace Library.Controllers
     public class BookRest
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string Title { get; set; }
         public AuthorRest Author { get; set; }
     }
 
     public class CreateBookRest
     {
-        public string Name { get; set; }
+        public string Title { get; set; }
         public Guid AuthorId { get; set; }
     }
 
     public class UpdateBookRest
     {
 #nullable enable
-        public string? Name { get; set; }
+        public string? Title { get; set; }
         public Guid? AuthorId { get; set; }
 #nullable disable
     }
