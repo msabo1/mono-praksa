@@ -112,6 +112,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\AutofacContainerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AuthorsController.cs" />
     <Compile Include="Controllers\BooksController.cs" />
@@ -144,6 +145,10 @@
     <ProjectReference Include="..\Library.Models\Library.Model.csproj">
       <Project>{4588d02e-6c92-4b75-8e88-4d3a79fb46f7}</Project>
       <Name>Library.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Library.Repository\Library.Repository.csproj">
+      <Project>{f582539b-42af-43be-8796-5199b696d648}</Project>
+      <Name>Library.Repository</Name>
     </ProjectReference>
     <ProjectReference Include="..\Library.Service.Common\Library.Service.Common.csproj">
       <Project>{bc98c871-7d86-48b2-bdae-c65be230753d}</Project>

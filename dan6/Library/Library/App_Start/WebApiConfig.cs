@@ -1,7 +1,4 @@
-﻿using Autofac;
-using Autofac.Integration.WebApi;
-using Newtonsoft.Json.Serialization;
-using System.Reflection;
+﻿using Newtonsoft.Json.Serialization;
 using System.Web.Http;
 
 namespace Library
@@ -14,16 +11,6 @@ namespace Library
             config.Filters.Add(new ValidateModelAttribute());
             config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             config.Formatters.JsonFormatter.UseDataContractJsonSerializer = false;
-
-            // Autofac config
-            var builder = new ContainerBuilder();
-            builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
-            builder.RegisterType<Mapper>().As<IMapper>();
-            builder.RegisterModule<Service.DIModule>();
-            builder.RegisterModule<Repository.DIModule>();
-
-            var container = builder.Build();
-            config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
 
             // Web API routes
             config.MapHttpAttributeRoutes();
