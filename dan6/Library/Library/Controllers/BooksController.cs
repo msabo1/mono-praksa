@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
-using Library.Model.Book;
+using Library.Common.Filters;
+using Library.Common.Pagination;
+using Library.Common.Sort;
+using Library.Model;
 using Library.Model.Common;
 using Library.Service.Common;
 using System;
@@ -34,9 +37,9 @@ namespace Library.Controllers
         }
 
         [HttpGet]
-        public async Task<IHttpActionResult> GetAsync([FromUri] QueryBooksDto queryBooksDto)
+        public async Task<IHttpActionResult> GetAsync([FromUri] Sort sort, [FromUri] Pagination pagination, [FromUri] BookFilter filter)
         {
-            ICollection<IBook> books = await _service.GetAsync(queryBooksDto);
+            ICollection<IBook> books = await _service.GetAsync(sort, pagination, filter);
             return Ok(_mapper.Map<List<BookRest>>(books));
         }
 

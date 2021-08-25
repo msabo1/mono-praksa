@@ -1,5 +1,7 @@
-﻿using Library.Model.Common;
-using Library.Model.Common.Author;
+﻿using Library.Common.Filters;
+using Library.Common.Pagination;
+using Library.Common.Sort;
+using Library.Model.Common;
 using Library.Repository.Common;
 using Library.Service.Common;
 using System;
@@ -23,9 +25,9 @@ namespace Library.Service
         }
 
 
-        public async Task<ICollection<IAuthor>> GetAsync(IQueryAuthorsDto queryDto)
+        public async Task<ICollection<IAuthor>> GetAsync(ISort sort = null, IPagination pagination = null, IAuthorFilter filter = null)
         {
-            return await _repository.GetAsync(queryDto);
+            return await _repository.GetAsync(sort, pagination, filter);
         }
 
         public async Task<IAuthor> GetByIdAsync(Guid id)

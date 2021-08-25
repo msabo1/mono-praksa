@@ -1,9 +1,9 @@
-﻿using Library.Model.Common;
-using Library.Model.Common.Author;
+﻿using Library.Common.Filters;
+using Library.Model.Common;
 
 namespace Library.Service.Common
 {
-    public interface IAuthorsService : IBaseService<IAuthor, IQueryAuthorsDto>
+    public interface IAuthorsService : IBaseService<IAuthor, IAuthorFilter>
     {
     }
 }

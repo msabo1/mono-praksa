@@ -74,6 +74,24 @@ namespace Library.Repository
             return this;
         }
 
+        public IQueryBuilder<ModelT> Sort(string sortBy, string order)
+        {
+            _sqlCommandString += $" ORDER BY {sortBy} {order}";
+            return this;
+        }
+
+        public IQueryBuilder<ModelT> Limit(int limit)
+        {
+            _sqlCommandString += $" FETCH NEXT {limit} ROWS ONLY";
+            return this;
+        }
+
+        public IQueryBuilder<ModelT> Offset(int offset)
+        {
+            _sqlCommandString += $" OFFSET {offset} ROWS";
+            return this;
+        }
+
         public IQueryBuilder<ModelT> AddStatement(string statement, params (string Key, object Value)[] parameters)
         {
             _sqlCommandString += $" {statement}";

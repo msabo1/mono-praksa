@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
-using Library.Model.Author;
+using Library.Common.Filters;
+using Library.Common.Pagination;
+using Library.Common.Sort;
+using Library.Model;
 using Library.Model.Common;
 using Library.Service.Common;
 using System;
@@ -34,9 +37,9 @@ namespace Library.Controllers
         }
 
         [HttpGet]
-        public async Task<IHttpActionResult> GetAsync([FromUri] QueryAuthorsDto queryAuthorsDto)
+        public async Task<IHttpActionResult> GetAsync([FromUri] Sort sort, [FromUri] Pagination pagination, [FromUri] AuthorFilter filter)
         {
-            ICollection<IAuthor> authors = await _service.GetAsync(queryAuthorsDto);
+            ICollection<IAuthor> authors = await _service.GetAsync(sort, pagination, filter);
             return Ok(_mapper.Map<List<AuthorRest>>(authors));
         }
 

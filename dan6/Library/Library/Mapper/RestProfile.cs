@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Library.Controllers;
-using Library.Model.Author;
-using Library.Model.Book;
+using Library.Model;
 using Library.Model.Common;
 
 namespace Library.Mapper

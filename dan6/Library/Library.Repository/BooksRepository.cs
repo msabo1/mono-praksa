@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
-using Library.Model.Book;
+using Library.Common.Filters;
+using Library.Common.Pagination;
+using Library.Common.Sort;
+using Library.Model;
 using Library.Model.Common;
-using Library.Model.Common.Book;
 using Library.Repository.Common;
 using System;
 using System.Collections.Generic;
@@ -34,22 +36,19 @@ namespace Library.Repository
             return book;
         }
 
-        public async Task<ICollection<IBook>> GetAsync(IQueryBooksDto queryBooksDto = null)
+        public async Task<ICollection<IBook>> GetAsync(ISort sort = null, IPagination pagination = null, IBookFilter filter = null)
         {
             IQueryBuilder<IBook> queryBuilder = CreateQueryBuilder();
             queryBuilder.Select("Book").LeftJoin("Author", "AuthorId", "Id");
-            if (queryBooksDto?.Search != null)
+            if (filter?.Search != null)
             {
-                queryBuilder.OrWhere("Name LIKE @Search", ("@Search", $"%{queryBooksDto.Search}%"));
+                queryBuilder.OrWhere("Title LIKE @Search", ("@Search", $"%{filter.Search}%"));
             }
-            if (queryBooksDto?.SortBy != null)
+            queryBuilder.Sort(sort.SortBy ?? "Title", sort.Order.ToUpper());
+            if (pagination?.PageNumber != null)
             {
-                if (queryBooksDto.Order?.ToUpper() != "ASC" || queryBooksDto.Order?.ToUpper() != "DESC")
-                {
-                    queryBooksDto.Order = "ASC";
-                }
-                // can't do param bindning here, should be validated at request level...
-                queryBuilder.AddStatement($"ORDER BY {queryBooksDto.SortBy} {queryBooksDto.Order.ToUpper()}");
+                int offset = ((int)pagination.PageNumber - 1) * (int)pagination.PageSize;
+                queryBuilder.Offset(offset).Limit((int)pagination.PageSize);
             }
             return await queryBuilder.GetManyAsync();
         }

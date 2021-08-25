@@ -1,9 +1,9 @@
-﻿using Library.Model.Common;
-using Library.Model.Common.Book;
+﻿using Library.Common.Filters;
+using Library.Model.Common;
 
 namespace Library.Repository.Common
 {
-    public interface IBooksRepository : IBaseRepository<IBook, IQueryBooksDto>
+    public interface IBooksRepository : IBaseRepository<IBook, IBookFilter>
     {
     }
 }

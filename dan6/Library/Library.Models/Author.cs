@@ -1,7 +1,7 @@
 ﻿using Library.Model.Common;
 using System;
 
-namespace Library.Model.Author
+namespace Library.Model
 {
     public class Author : IAuthor
     {

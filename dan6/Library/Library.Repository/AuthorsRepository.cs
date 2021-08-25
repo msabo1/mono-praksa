@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
-using Library.Model.Author;
+using Library.Common.Filters;
+using Library.Common.Pagination;
+using Library.Common.Sort;
+using Library.Model;
 using Library.Model.Common;
-using Library.Model.Common.Author;
 using Library.Repository.Common;
 using System;
 using System.Collections.Generic;
@@ -36,35 +38,32 @@ namespace Library.Repository
             return author;
         }
 
-        public async Task<ICollection<IAuthor>> GetAsync(IQueryAuthorsDto queryAuthorsDto = null)
+        public async Task<ICollection<IAuthor>> GetAsync(ISort sort = null, IPagination pagination = null, IAuthorFilter filter = null)
         {
             IQueryBuilder<IAuthor> queryBuilder = CreateQueryBuilder();
             queryBuilder.Select("Author");
-            if (queryAuthorsDto?.Search != null)
+            if (filter?.Search != null)
             {
-                queryBuilder.OrWhere("Name LIKE @Search OR Gender LIKE @Search", ("@Search", $"%{queryAuthorsDto.Search}%"));
+                queryBuilder.OrWhere("Name LIKE @Search OR Gender LIKE @Search", ("@Search", $"%{filter.Search}%"));
             }
-            if (queryAuthorsDto?.Gender != null)
+            if (filter?.Gender != null)
             {
-                queryBuilder.AndWhere("Gender LIKE @Gender", ("@Gender", queryAuthorsDto.Gender));
+                queryBuilder.AndWhere("Gender LIKE @Gender", ("@Gender", filter.Gender));
             }
-            if (queryAuthorsDto?.SortBy != null)
+            queryBuilder.Sort(sort.SortBy ?? "Name", sort.Order.ToUpper());
+            if (pagination?.PageNumber != null)
             {
-                if (queryAuthorsDto.Order?.ToUpper() != "ASC" || queryAuthorsDto.Order?.ToUpper() != "DESC")
-                {
-                    queryAuthorsDto.Order = "ASC";
-                }
-                // can't do param bindning here, should be validated at request level...
-                queryBuilder.AddStatement($"ORDER BY {queryAuthorsDto.SortBy} {queryAuthorsDto.Order.ToUpper()}");
+                int offset = ((int)pagination.PageNumber - 1) * (int)pagination.PageSize;
+                queryBuilder.Offset(offset).Limit((int)pagination.PageSize);
             }
             return await queryBuilder.GetManyAsync(); ;
         }
 
         public async Task<IAuthor> GetByIdAsync(Guid id)
         {
-            IQueryBuilder<IAuthor> querBuilder = CreateQueryBuilder();
-            querBuilder.Select("Author").Where("Id = @Id", ("@Id", id));
-            return await querBuilder.GetOneAsync();
+            IQueryBuilder<IAuthor> queryBuilder = CreateQueryBuilder();
+            queryBuilder.Select("Author").Where("Id = @Id", ("@Id", id));
+            return await queryBuilder.GetOneAsync();
         }
 
         public async Task<IAuthor> UpdateAsync(IAuthor author)

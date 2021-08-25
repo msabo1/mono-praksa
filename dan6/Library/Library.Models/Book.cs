@@ -1,7 +1,7 @@
 ﻿using Library.Model.Common;
 using System;
 
-namespace Library.Model.Book
+namespace Library.Model
 {
     public class Book : IBook
     {

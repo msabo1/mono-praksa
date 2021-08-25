@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Data.Configuration.Conventions;
-using Library.Model.Author;
-using Library.Model.Book;
+using Library.Model;
 using System.Data;
 
 namespace Library.Repository
