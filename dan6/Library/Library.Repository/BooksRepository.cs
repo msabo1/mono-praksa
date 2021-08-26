@@ -13,9 +13,8 @@ using System.Threading.Tasks;
 
 namespace Library.Repository
 {
-    public class BooksRepository : IBooksRepository
+    public class BooksRepository : RepositoryBase<IBook, IBookFilter>, IBooksRepository
     {
-        private SqlConnection _connection;
         private IMapper _mapper;
         public BooksRepository(SqlConnection connection, IMapper mapper)
         {
@@ -40,16 +39,10 @@ namespace Library.Repository
         {
             IQueryBuilder<IBook> queryBuilder = CreateQueryBuilder();
             queryBuilder.Select("Book").LeftJoin("Author", "AuthorId", "Id");
-            if (filter?.Search != null)
-            {
-                queryBuilder.OrWhere("Title LIKE @Search", ("@Search", $"%{filter.Search}%"));
-            }
-            queryBuilder.Sort(sort.SortBy ?? "Title", sort.Order.ToUpper());
-            if (pagination?.PageNumber != null)
-            {
-                int offset = ((int)pagination.PageNumber - 1) * (int)pagination.PageSize;
-                queryBuilder.Offset(offset).Limit((int)pagination.PageSize);
-            }
+            AddSearch(queryBuilder, filter.Search, "Book.Title", "Author.Name");
+            AddFilters(queryBuilder, filter);
+            AddSort(queryBuilder, sort, "Book.Id");
+            AddPagination(queryBuilder, pagination);
             return await queryBuilder.GetManyAsync();
         }
 
@@ -84,7 +77,7 @@ namespace Library.Repository
             }
         }
 
-        private IQueryBuilder<IBook> CreateQueryBuilder()
+        protected override IQueryBuilder<IBook> CreateQueryBuilder()
         {
             return new QueryBuilder<IBook>(_connection, _mapper.Map<IDataRecord, Book>);
         }

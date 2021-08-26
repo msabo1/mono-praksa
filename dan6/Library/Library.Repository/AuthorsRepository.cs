@@ -13,11 +13,9 @@ using System.Threading.Tasks;
 
 namespace Library.Repository
 {
-    public class AuthorsRepository : IAuthorsRepository
+    public class AuthorsRepository : RepositoryBase<IAuthor, IAuthorFilter>, IAuthorsRepository
     {
-        private SqlConnection _connection;
         private IMapper _mapper;
-
         public AuthorsRepository(SqlConnection connection, IMapper mapper)
         {
             _connection = connection;
@@ -42,20 +40,10 @@ namespace Library.Repository
         {
             IQueryBuilder<IAuthor> queryBuilder = CreateQueryBuilder();
             queryBuilder.Select("Author");
-            if (filter?.Search != null)
-            {
-                queryBuilder.OrWhere("Name LIKE @Search OR Gender LIKE @Search", ("@Search", $"%{filter.Search}%"));
-            }
-            if (filter?.Gender != null)
-            {
-                queryBuilder.AndWhere("Gender LIKE @Gender", ("@Gender", filter.Gender));
-            }
-            queryBuilder.Sort(sort.SortBy ?? "Name", sort.Order.ToUpper());
-            if (pagination?.PageNumber != null)
-            {
-                int offset = ((int)pagination.PageNumber - 1) * (int)pagination.PageSize;
-                queryBuilder.Offset(offset).Limit((int)pagination.PageSize);
-            }
+            AddSearch(queryBuilder, filter.Search, "Name", "Gender");
+            AddFilters(queryBuilder, filter);
+            AddSort(queryBuilder, sort, "Name");
+            AddPagination(queryBuilder, pagination);
             return await queryBuilder.GetManyAsync(); ;
         }
 
@@ -90,7 +78,7 @@ namespace Library.Repository
             }
         }
 
-        private IQueryBuilder<IAuthor> CreateQueryBuilder()
+        protected override IQueryBuilder<IAuthor> CreateQueryBuilder()
         {
             return new QueryBuilder<IAuthor>(_connection, _mapper.Map<IDataRecord, Author>);
         }
