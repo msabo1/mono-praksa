@@ -2,7 +2,7 @@
 
 namespace Library.Model.Common
 {
-    public interface IBook
+    public interface IBook : IBaseModel
     {
         Guid Id { get; set; }
         string Title { get; set; }

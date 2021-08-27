@@ -10,12 +10,26 @@ namespace Library.Repository
         public RepositoryProfile()
         {
             AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
-            CreateMap<IDataRecord, Author>();
+            CreateMap<IDataRecord, Author>()
+                .ForMember(author => author.Id, opt => opt.MapFrom(reader => reader["Author.Id"]))
+                .ForMember(author => author.Name, opt => opt.MapFrom(reader => reader["Author.Name"]))
+                .ForMember(author => author.Gender, opt => opt.MapFrom(reader => reader["Author.Gender"]))
+                .ForMember(author => author.Books, opt => opt.Ignore())
+                .AfterMap((reader, author, ctx) =>
+                        {
+                            try
+                            {
+                                if (reader["Book.Id"] != null)
+                                {
+                                    author.Books.Add(ctx.Mapper.Map<IDataRecord, Book>(reader));
+                                }
+                            }
+                            catch { }
+                        });
             CreateMap<IDataRecord, Book>()
-                .ForMember(
-                    book => book.Author,
-                    opt => opt.MapFrom((reader, book, i, ctx) => ctx.Mapper.Map<IDataRecord, Author>(reader))
-                );
+                .ForMember(book => book.Id, opt => opt.MapFrom(reader => reader["Book.Id"]))
+                .ForMember(book => book.Title, opt => opt.MapFrom(reader => reader["Book.Title"]))
+                .ForMember(book => book.AuthorId, opt => opt.MapFrom(reader => reader["Book.AuthorId"]));
         }
     }
 }

@@ -95,6 +95,7 @@ namespace Library.Controllers
         public Guid Id;
         public string Name { get; set; }
         public string Gender { get; set; }
+        public ICollection<BookRest> Books { get; set; }
     }
     public class CreateAuthorRest
     {

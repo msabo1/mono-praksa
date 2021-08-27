@@ -38,18 +38,19 @@ namespace Library.Repository
         public async Task<ICollection<IBook>> GetAsync(ISort sort = null, IPagination pagination = null, IBookFilter filter = null)
         {
             IQueryBuilder<IBook> queryBuilder = CreateQueryBuilder();
-            queryBuilder.Select("Book").LeftJoin("Author", "AuthorId", "Id");
+            queryBuilder.Select().LeftJoinOne<Book, Author>();
             AddSearch(queryBuilder, filter.Search, "Book.Title", "Author.Name");
             AddFilters(queryBuilder, filter);
             AddSort(queryBuilder, sort, "Book.Id");
             AddPagination(queryBuilder, pagination);
+            var a = queryBuilder.GetSqlCommandString();
             return await queryBuilder.GetManyAsync();
         }
 
         public async Task<IBook> GetByIdAsync(Guid id)
         {
             IQueryBuilder<IBook> querBuilder = CreateQueryBuilder();
-            querBuilder.Select("Book").LeftJoin("Author", "AuthorId", "Id").Where("Book.Id = @Id", ("@Id", id));
+            querBuilder.Select().LeftJoinMany<Author, Book>().Where("Book.Id = @Id", ("@Id", id));
             return await querBuilder.GetOneAsync();
         }
 
@@ -79,7 +80,7 @@ namespace Library.Repository
 
         protected override IQueryBuilder<IBook> CreateQueryBuilder()
         {
-            return new QueryBuilder<IBook>(_connection, _mapper.Map<IDataRecord, Book>);
+            return new QueryBuilder<IBook, Book>(_connection, _mapper.Map<IDataRecord, Book>, _mapper.Map<IDataRecord, Book>);
         }
     }
 }

@@ -39,18 +39,18 @@ namespace Library.Repository
         public async Task<ICollection<IAuthor>> GetAsync(ISort sort = null, IPagination pagination = null, IAuthorFilter filter = null)
         {
             IQueryBuilder<IAuthor> queryBuilder = CreateQueryBuilder();
-            queryBuilder.Select("Author");
-            AddSearch(queryBuilder, filter.Search, "Name", "Gender");
+            queryBuilder.Select().LeftJoinMany<Author, Book>();
+            AddSearch(queryBuilder, filter.Search, "Author.Name", "Author.Gender");
             AddFilters(queryBuilder, filter);
-            AddSort(queryBuilder, sort, "Name");
+            AddSort(queryBuilder, sort, "Author.Name");
             AddPagination(queryBuilder, pagination);
-            return await queryBuilder.GetManyAsync(); ;
+            return await queryBuilder.GetManyAsync();
         }
 
         public async Task<IAuthor> GetByIdAsync(Guid id)
         {
             IQueryBuilder<IAuthor> queryBuilder = CreateQueryBuilder();
-            queryBuilder.Select("Author").Where("Id = @Id", ("@Id", id));
+            queryBuilder.Select().Where("Author.Id = @Id", ("@Id", id)).LeftJoinMany<Author, Book>();
             return await queryBuilder.GetOneAsync();
         }
 
@@ -80,7 +80,7 @@ namespace Library.Repository
 
         protected override IQueryBuilder<IAuthor> CreateQueryBuilder()
         {
-            return new QueryBuilder<IAuthor>(_connection, _mapper.Map<IDataRecord, Author>);
+            return new QueryBuilder<IAuthor, Author>(_connection, _mapper.Map<IDataRecord, Author>, _mapper.Map<IDataRecord, Author>);
         }
     }
 }

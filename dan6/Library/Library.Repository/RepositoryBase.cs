@@ -34,7 +34,7 @@ namespace Library.Repository
                 object value = prop.GetValue(filter);
                 if (value != null)
                 {
-                    queryBuilder.AndWhere($"{prop.Name} LIKE @{prop.Name}", ($"@{prop.Name}", prop.GetValue(filter)));
+                    queryBuilder.AndWhere($"{prop.Name} LIKE @{prop.Name}", ($"@{prop.Name}", value));
                 }
             }
         }
