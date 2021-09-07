@@ -1,0 +1,72 @@
+body, html{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body{
+    background-color: #ebfcfe;
+}
+
+.toolbar{
+    height: 100px;
+    background: linear-gradient(to right, #fc03fc, #03fcf8);
+    color: white;
+    font-size: 200%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#content-container{
+    display: flex;
+    height: calc(100% - 100px);
+    justify-content: center;
+}
+
+#content{
+    padding: 20px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.todo{
+    margin-top: 10px;
+    display: flex !important;
+    background-color: white;
+    padding: 20px;
+    justify-content: space-between;
+    width: 50%;
+}
+
+.done{
+    color: #adefd1ff;
+}
+
+.delete{
+    color: #ed2e88ff;
+}
+
+.edit{
+    color: #00203fff;
+}
+
+input{
+  padding: 5px;
+  border: none;
+  background-color: #e8e9eb;
+  border-radius: 5px;
+}
+#addButton{
+  background-color: #82c8a0;
+  border: 1px solid #746d69;
+  border-radius: 5px;
+  color: #e8e9eb;
+  margin-left: 2px;
+}
+
+.done:hover, .delete:hover, .edit:hover{
+    cursor: pointer;
+}
