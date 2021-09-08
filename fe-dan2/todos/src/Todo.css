@@ -1,0 +1,31 @@
+.todo {
+  margin-top: 10px;
+  display: flex !important;
+  background-color: white;
+  padding: 20px;
+  justify-content: space-between;
+  width: 50%;
+}
+
+.done {
+  color: #adefd1ff;
+}
+
+.delete {
+  color: #ed2e88ff;
+}
+
+.edit {
+  color: #00203fff;
+}
+
+.done:hover,
+.delete:hover,
+.edit:hover {
+  cursor: pointer;
+}
+
+.todo-description {
+  display: flex !important;
+  align-content: center;
+}

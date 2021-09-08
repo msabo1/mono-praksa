@@ -1,0 +1,9 @@
+.toolbar {
+  height: 100px;
+  background: linear-gradient(to right, #fc03fc, #03fcf8);
+  color: white;
+  font-size: 200%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
